@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Recruitment Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen font-sans">
+    <div class="w-full max-w-md">
+        <div class="bg-white p-8 rounded-2xl shadow-xl">
+            <div class="text-center mb-8">
+                <i class="fas fa-users text-5xl text-indigo-600"></i>
+                <h2 class="mt-4 text-3xl font-bold text-gray-800">Recruitment Portal</h2>
+                <p class="text-gray-500">Please sign in to continue</p>
+            </div>
+            
+            {% if error %}
+                <div class="bg-red-100 text-red-700 p-4 rounded-lg mb-6 text-sm flex items-center">
+                    <i class="fas fa-exclamation-circle mr-3"></i>
+                    <span>{{ error }}</span>
+                </div>
+            {% endif %}
+            
+            <form action="{{ url_for('route_admin_login') }}" method="POST" class="space-y-6">
+                <div>
+                    <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <i class="fas fa-envelope text-gray-400"></i>
+                        </span>
+                        <input type="email" id="email" name="email" required class="login-input" placeholder="you@example.com">
+                    </div>
+                </div>
+                <div>
+                    <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <i class="fas fa-lock text-gray-400"></i>
+                        </span>
+                        <input type="password" id="password" name="password" required class="login-input" placeholder="••••••••">
+                    </div>
+                </div>
+                <div>
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-all duration-300 transform hover:scale-105">
+                        Sign In
+                    </button>
+                </div>
+            </form>
+        </div>
+        <p class="text-center text-gray-500 text-xs mt-6">
+            &copy;2025 Adventz Group. All rights reserved.
+        </p>
+    </div>
+</body>
+</html>

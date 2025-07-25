@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adventz Campus Recruitment Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        /* Enhanced Form Styling */
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .form-section {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .form-section.entering {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        
+        .form-section.entered {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* Enhanced Input Styling */
+        .form-input {
+            transition: all 0.3s ease;
+            border: 2px solid #e5e7eb;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            transform: translateY(-1px);
+            background: white;
+        }
+        
+        .form-input:hover:not(:focus) {
+            border-color: #d1d5db;
+            transform: translateY(-1px);
+        }
+        
+        /* Progress Bar */
+        .progress-bar {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Section Headers */
+        .section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Custom File Upload */
+        .file-upload-area {
+            border: 2px dashed #d1d5db;
+            transition: all 0.3s ease;
+            background: rgba(249, 250, 251, 0.5);
+        }
+        
+        .file-upload-area:hover {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        .file-upload-area.dragover {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.1);
+            transform: scale(1.02);
+        }
+        
+        /* Enhanced Radio and Checkbox */
+        .radio-option, .checkbox-option {
+            transition: all 0.2s ease;
+            border: 2px solid #e5e7eb;
+            background: rgba(255, 255, 255, 0.8);
+        }
+        
+        .radio-option:hover, .checkbox-option:hover {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.05);
+            transform: translateY(-1px);
+        }
+        
+        .radio-option.selected, .checkbox-option.selected {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.1);
+        }
+        
+        /* Error States */
+        .field-error {
+            border-color: #ef4444 !important;
+            background: rgba(239, 68, 68, 0.05) !important;
+        }
+        
+        .error-message {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            animation: slideDown 0.3s ease;
+        }
+        
+        /* Loading States */
+        .loading-spinner {
+            border: 3px solid rgba(99, 102, 241, 0.1);
+            border-top: 3px solid #6366f1;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Animations */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        /* Button Enhancements */
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: white;
+            border-color: #6366f1;
+            transform: translateY(-1px);
+        }
+        
+        /* Step Indicator */
+        .step-indicator {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .step-item {
+            transition: all 0.3s ease;
+        }
+        
+        .step-item.active {
+            color: #6366f1;
+        }
+        
+        .step-item.completed {
+            color: #10b981;
+        }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .form-container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+            
+            .section-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        
+        /* Floating Labels */
+        .floating-label {
+            position: absolute;
+            left: 1rem;
+            top: 0.75rem;
+            color: #6b7280;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            background: white;
+            padding: 0 0.25rem;
+        }
+        
+        .form-input:focus + .floating-label,
+        .form-input:not(:placeholder-shown) + .floating-label {
+            top: -0.5rem;
+            left: 0.75rem;
+            font-size: 0.75rem;
+            color: #6366f1;
+            font-weight: 600;
+        }
+        
+        /* Success States */
+        .field-success {
+            border-color: #10b981 !important;
+            background: rgba(16, 185, 129, 0.05) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen py-8 px-4">
+        <div class="max-w-6xl mx-auto">
+            
+            <!-- Header Section -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg mb-6">
+                    <i class="fas fa-graduation-cap text-3xl text-indigo-600"></i>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
+                    Campus Recruitment Application
+                </h1>
+                <p class="text-xl text-indigo-100 max-w-2xl mx-auto">
+                    Join our team! Please fill out this application form carefully and accurately.
+                </p>
+            </div>
+
+            <!-- Progress Indicator -->
+            <div id="progress-container" class="step-indicator rounded-2xl p-6 mb-8 hidden">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Application Progress</h3>
+                    <span id="progress-text" class="text-sm text-gray-600">0% Complete</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
+                    <div id="progress-bar" class="progress-bar h-3 rounded-full" style="width: 0%"></div>
+                </div>
+                <div id="steps-container" class="flex flex-wrap gap-2"></div>
+            </div>
+
+            <!-- Main Form Container -->
+            <div class="form-container rounded-3xl shadow-2xl p-8 md:p-12">
+                
+                <!-- Loading State -->
+                <div id="loading-state" class="text-center py-20">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-full mb-6">
+                        <div class="loading-spinner"></div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Loading Application Form</h3>
+                    <p class="text-gray-600">Please wait while we prepare your personalized form...</p>
+                </div>
+
+                <!-- Error State -->
+                <div id="error-state" class="hidden text-center py-20">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-6">
+                        <i class="fas fa-exclamation-triangle text-2xl text-red-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Unable to Load Form</h3>
+                    <p class="text-gray-600 mb-6" id="error-message">There was an error loading the form configuration.</p>
+                    <button onclick="loadFormConfiguration()" class="btn-primary text-white px-6 py-3 rounded-xl font-semibold">
+                        <i class="fas fa-redo mr-2"></i>Try Again
+                    </button>
+                </div>
+
+                <!-- Dynamic Form -->
+                <form id="recruitment-form" class="hidden" enctype="multipart/form-data">
+                    <div id="form-sections" class="space-y-12">
+                        <!-- Dynamic sections will be inserted here -->
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="mt-16 pt-8 border-t border-gray-200">
+                        <div class="flex flex-col sm:flex-row gap-4 justify-end">
+                            <button type="button" class="btn-secondary px-8 py-4 rounded-xl font-semibold text-gray-700 order-2 sm:order-1">
+                                <i class="fas fa-times mr-2"></i>Cancel
+                            </button>
+                            <button type="submit" class="btn-primary text-white px-12 py-4 rounded-xl font-semibold order-1 sm:order-2">
+                                <span id="submit-text">
+                                    <i class="fas fa-paper-plane mr-2"></i>Submit Application
+                                </span>
+                                <div id="submit-spinner" class="hidden loading-spinner ml-2"></div>
+                            </button>
+                        </div>
+                        <p class="text-sm text-gray-500 text-center mt-4">
+                            <i class="fas fa-shield-alt mr-1"></i>
+                            Your information is secure and will be kept confidential.
+                        </p>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Footer -->
+            <div class="text-center mt-8 text-indigo-100">
+                <p>&copy; 2025 Adventz Group. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let formConfig = {};
+        let validationRules = {};
+        let currentStep = 0;
+        let totalSteps = 0;
+        let completedFields = new Set();
+
+        // Load form configuration on page load
+        window.onload = function() {
+            const userName = sessionStorage.getItem('recruitmentUserName');
+            const userEmail = sessionStorage.getItem('recruitmentUserEmail');
+            if (userName && userEmail) {
+                loadFormConfiguration();
+            } else {
+                alert('You must create a profile to access this page.');
+                window.location.href = 'login.html';
+            }
+        };
+
+        async function loadFormConfiguration() {
+            try {
+                showLoadingState();
+                const response = await fetch('http://127.0.0.1:5201/api/public/form-config');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                formConfig = await response.json();
+                totalSteps = Object.keys(formConfig).length;
+                
+                renderDynamicForm();
+                setupProgressTracking();
+                showFormState();
+                
+                // Populate user details after form is rendered
+                populateUserDetails();
+                
+                // Add entrance animation
+                setTimeout(() => {
+                    document.querySelectorAll('.form-section').forEach((section, index) => {
+                        setTimeout(() => {
+                            section.classList.add('entered');
+                        }, index * 150);
+                    });
+                }, 100);
+                
+            } catch (error) {
+                console.error('Error loading form configuration:', error);
+                showErrorState(error.message);
+            }
+        }
+
+        function showLoadingState() {
+            document.getElementById('loading-state').classList.remove('hidden');
+            document.getElementById('error-state').classList.add('hidden');
+            document.getElementById('recruitment-form').classList.add('hidden');
+            document.getElementById('progress-container').classList.add('hidden');
+        }
+
+        function showErrorState(message) {
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('error-state').classList.remove('hidden');
+            document.getElementById('recruitment-form').classList.add('hidden');
+            document.getElementById('progress-container').classList.add('hidden');
+            document.getElementById('error-message').textContent = message;
+        }
+
+        function showFormState() {
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('error-state').classList.add('hidden');
+            document.getElementById('recruitment-form').classList.remove('hidden');
+            document.getElementById('progress-container').classList.remove('hidden');
+        }
+
+        function setupProgressTracking() {
+            const stepsContainer = document.getElementById('steps-container');
+            stepsContainer.innerHTML = '';
+            
+            Object.keys(formConfig).forEach((sectionName, index) => {
+                const stepElement = document.createElement('div');
+                stepElement.className = 'step-item flex items-center px-3 py-1 rounded-full bg-gray-100 text-sm font-medium';
+                stepElement.innerHTML = `
+                    <i class="fas fa-circle mr-2 text-xs"></i>
+                    <span>${sectionName}</span>
+                `;
+                stepsContainer.appendChild(stepElement);
+            });
+            
+            updateProgress();
+        }
+
+        function renderDynamicForm() {
+            const formSections = document.getElementById('form-sections');
+            formSections.innerHTML = '';
+
+            Object.entries(formConfig).forEach(([sectionName, fields], index) => {
+                const sectionElement = createFormSection(sectionName, fields, index);
+                formSections.appendChild(sectionElement);
+            });
+
+            // Add resume upload section if not present
+            if (!formConfig['CV / Resume Upload']) {
+                const resumeSection = createResumeSection();
+                formSections.appendChild(resumeSection);
+            }
+        }
+
+        function createFormSection(sectionName, fields, index) {
+            const section = document.createElement('div');
+            section.className = 'form-section entering bg-gradient-to-br from-white to-gray-50 rounded-2xl p-8 shadow-lg border border-gray-100';
+            section.setAttribute('data-section', index);
+            
+            // Section Header
+            const header = document.createElement('div');
+            header.className = 'flex items-center mb-8 pb-4 border-b border-gray-200';
+            header.innerHTML = `
+                <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl mr-4">
+                    <i class="fas fa-edit text-white text-lg"></i>
+                </div>
+                <div>
+                    <h2 class="section-header text-2xl font-bold">${sectionName}</h2>
+                    <p class="text-gray-600 mt-1">Please fill in all required fields</p>
+                </div>
+            `;
+            section.appendChild(header);
+
+            // Fields Grid
+            const grid = document.createElement('div');
+            grid.className = 'section-grid grid grid-cols-1 lg:grid-cols-2 gap-8';
+
+            fields.forEach(field => {
+                const fieldElement = createFormField(field);
+                if (fieldElement) {
+                    if (field.type === 'textarea') {
+                        fieldElement.classList.add('lg:col-span-2');
+                    }
+                    grid.appendChild(fieldElement);
+                }
+            });
+
+            section.appendChild(grid);
+            return section;
+        }
+
+        function createFormField(field) {
+            const fieldContainer = document.createElement('div');
+            fieldContainer.className = 'field-container';
+            
+            // Store validation rules
+            if (field.validations) {
+                try {
+                    validationRules[field.name] = JSON.parse(field.validations);
+                } catch (e) {
+                    validationRules[field.name] = {};
+                }
+            }
+
+            if (field.type === 'radio') {
+                return createRadioField(field, fieldContainer);
+            }
+
+            if (field.type === 'checkbox') {
+                return createCheckboxField(field, fieldContainer);
+            }
+
+            // Field Label
+            const label = document.createElement('label');
+            label.setAttribute('for', field.name);
+            label.className = 'block text-sm font-semibold text-gray-700 mb-3';
+            label.innerHTML = `
+                <i class="fas fa-${getFieldIcon(field.type)} mr-2 text-indigo-500"></i>
+                ${field.label}
+                ${field.required ? '<span class="text-red-500 ml-1">*</span>' : ''}
+            `;
+            fieldContainer.appendChild(label);
+
+            // Input Container (for floating labels if needed)
+            const inputContainer = document.createElement('div');
+            inputContainer.className = 'relative';
+
+            let input;
+            
+            switch (field.type) {
+                case 'select':
+                    input = createSelectField(field);
+                    break;
+                case 'textarea':
+                    input = createTextareaField(field);
+                    break;
+                case 'file':
+                    input = createFileField(field);
+                    break;
+                default:
+                    input = createInputField(field);
+            }
+
+            if (input) {
+                inputContainer.appendChild(input);
+                fieldContainer.appendChild(inputContainer);
+                
+                // Add error message container
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message hidden';
+                errorDiv.id = `error-${field.name}`;
+                fieldContainer.appendChild(errorDiv);
+
+                // Add success indicator
+                const successDiv = document.createElement('div');
+                successDiv.className = 'success-message hidden text-green-600 text-sm mt-2';
+                successDiv.id = `success-${field.name}`;
+                successDiv.innerHTML = '<i class="fas fa-check-circle mr-1"></i>Looks good!';
+                fieldContainer.appendChild(successDiv);
+
+                // Add validation listeners
+                addValidationListeners(input, field);
+            }
+
+            return fieldContainer;
+        }
+
+        function getFieldIcon(type) {
+            const icons = {
+                'text': 'edit',
+                'email': 'envelope',
+                'tel': 'phone',
+                'date': 'calendar',
+                'number': 'hashtag',
+                'textarea': 'align-left',
+                'select': 'list',
+                'file': 'upload',
+                'radio': 'dot-circle',
+                'checkbox': 'check-square'
+            };
+            return icons[type] || 'edit';
+        }
+
+        function createInputField(field) {
+            const input = document.createElement('input');
+            input.type = field.type;
+            input.name = field.name;
+            input.id = field.name;
+            input.className = 'form-input block w-full px-4 py-4 rounded-xl shadow-sm text-gray-900 placeholder-gray-400';
+            input.placeholder = `Enter ${field.label.toLowerCase()}...`;
+            
+            if (field.required) input.required = true;
+            if (field.name === 'name' || field.name === 'email') {
+                input.readOnly = true;
+                input.className += ' bg-gray-50 cursor-not-allowed';
+            }
+            
+            return input;
+        }
+
+        function createSelectField(field) {
+            const select = document.createElement('select');
+            select.name = field.name;
+            select.id = field.name;
+            select.className = 'form-input block w-full px-4 py-4 rounded-xl shadow-sm text-gray-900';
+            
+            if (field.required) select.required = true;
+
+            // Add default option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = `Select ${field.label}`;
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            select.appendChild(defaultOption);
+
+            // Add options
+            if (field.options) {
+                field.options.split(',').forEach(option => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option.trim();
+                    optionElement.textContent = option.trim();
+                    select.appendChild(optionElement);
+                });
+            }
+
+            return select;
+        }
+
+        function createTextareaField(field) {
+            const textarea = document.createElement('textarea');
+            textarea.name = field.name;
+            textarea.id = field.name;
+            textarea.className = 'form-input block w-full px-4 py-4 rounded-xl shadow-sm text-gray-900 placeholder-gray-400 resize-none';
+            textarea.rows = 4;
+            textarea.placeholder = `Enter ${field.label.toLowerCase()}...`;
+            
+            if (field.required) textarea.required = true;
+            
+            return textarea;
+        }
+
+        function createRadioField(field, container) {
+            const fieldset = document.createElement('div');
+            fieldset.className = 'space-y-4';
+
+            const legend = document.createElement('label');
+            legend.className = 'block text-sm font-semibold text-gray-700 mb-4';
+            legend.innerHTML = `
+                <i class="fas fa-dot-circle mr-2 text-indigo-500"></i>
+                ${field.label}
+                ${field.required ? '<span class="text-red-500 ml-1">*</span>' : ''}
+            `;
+            fieldset.appendChild(legend);
+
+            const radioContainer = document.createElement('div');
+            radioContainer.className = 'grid grid-cols-1 gap-3';
+
+            if (field.options) {
+                field.options.split(',').forEach((option, index) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'radio-option p-4 rounded-xl cursor-pointer';
+
+                    const label = document.createElement('label');
+                    label.className = 'flex items-center cursor-pointer';
+
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = field.name;
+                    radio.value = option.trim();
+                    radio.className = 'h-5 w-5 text-indigo-600 border-2 border-gray-300 focus:ring-indigo-500';
+                    
+                    radio.addEventListener('change', function() {
+                        // Update visual selection
+                        radioContainer.querySelectorAll('.radio-option').forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                        if (this.checked) {
+                            optionDiv.classList.add('selected');
+                        }
+                        updateProgress();
+                    });
+
+                    const span = document.createElement('span');
+                    span.className = 'ml-3 text-gray-900 font-medium';
+                    span.textContent = option.trim();
+
+                    label.appendChild(radio);
+                    label.appendChild(span);
+                    optionDiv.appendChild(label);
+                    radioContainer.appendChild(optionDiv);
+                });
+            }
+
+            fieldset.appendChild(radioContainer);
+            container.appendChild(fieldset);
+            return container;
+        }
+
+        function createCheckboxField(field, container) {
+            const checkboxDiv = document.createElement('div');
+            checkboxDiv.className = 'checkbox-option p-4 rounded-xl';
+
+            const label = document.createElement('label');
+            label.className = 'flex items-start cursor-pointer';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.name = field.name;
+            checkbox.id = field.name;
+            checkbox.className = 'h-5 w-5 text-indigo-600 border-2 border-gray-300 rounded focus:ring-indigo-500 mt-0.5';
+            if (field.required) checkbox.required = true;
+
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    checkboxDiv.classList.add('selected');
+                } else {
+                    checkboxDiv.classList.remove('selected');
+                }
+                updateProgress();
+            });
+
+            const span = document.createElement('span');
+            span.className = 'ml-3 text-gray-900 font-medium';
+            span.innerHTML = `
+                <i class="fas fa-check-square mr-2 text-indigo-500"></i>
+                ${field.label}
+                ${field.required ? '<span class="text-red-500 ml-1">*</span>' : ''}
+            `;
+
+            label.appendChild(checkbox);
+            label.appendChild(span);
+            checkboxDiv.appendChild(label);
+            container.appendChild(checkboxDiv);
+            return container;
+        }
+
+        function createFileField(field) {
+            const container = document.createElement('div');
+            
+            // Custom file upload area
+            const uploadArea = document.createElement('div');
+            uploadArea.className = 'file-upload-area p-8 rounded-xl text-center cursor-pointer';
+            
+            uploadArea.innerHTML = `
+                <div class="mb-4">
+                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400"></i>
+                </div>
+                <p class="text-lg font-medium text-gray-700 mb-2">
+                    Click to upload or drag and drop
+                </p>
+                <p class="text-sm text-gray-500">
+                    ${field.name === 'cv-resume' ? 'PDF format only, max 5MB' : 'Select your file'}
+                </p>
+            `;
+
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.name = field.name;
+            input.id = field.name;
+            input.className = 'hidden';
+            
+            if (field.required) input.required = true;
+            if (field.name === 'cv-resume') {
+                input.accept = '.pdf';
+            }
+
+            // File info display
+            const fileInfo = document.createElement('div');
+            fileInfo.id = `file-info-${field.name}`;
+            fileInfo.className = 'hidden mt-4 p-4 bg-indigo-50 rounded-xl border border-indigo-200';
+
+            uploadArea.addEventListener('click', () => input.click());
+            
+            // Drag and drop functionality
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    input.files = files;
+                    handleFileChange(input);
+                }
+            });
+
+            input.addEventListener('change', () => handleFileChange(input));
+
+            container.appendChild(uploadArea);
+            container.appendChild(input);
+            container.appendChild(fileInfo);
+            
+            return container;
+        }
+
+        function handleFileChange(input) {
+            const fileInfo = document.getElementById(`file-info-${input.name}`);
+            if (input.files.length > 0) {
+                const file = input.files[0];
+                fileInfo.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <i class="fas fa-file-pdf text-red-500 text-xl mr-3"></i>
+                            <div>
+                                <p class="font-medium text-gray-900">${file.name}</p>
+                                <p class="text-sm text-gray-600">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                            </div>
+                        </div>
+                        <button type="button" onclick="clearFile('${input.name}')" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                fileInfo.classList.remove('hidden');
+                updateProgress();
+            } else {
+                fileInfo.classList.add('hidden');
+            }
+        }
+
+        function clearFile(fieldName) {
+            const input = document.getElementById(fieldName);
+            const fileInfo = document.getElementById(`file-info-${fieldName}`);
+            input.value = '';
+            fileInfo.classList.add('hidden');
+            updateProgress();
+        }
+
+        function createResumeSection() {
+            const section = document.createElement('div');
+            section.className = 'form-section bg-gradient-to-br from-white to-gray-50 rounded-2xl p-8 shadow-lg border border-gray-100';
+            
+            const header = document.createElement('div');
+            header.className = 'flex items-center mb-8 pb-4 border-b border-gray-200';
+            header.innerHTML = `
+                <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl mr-4">
+                    <i class="fas fa-file-upload text-white text-lg"></i>
+                </div>
+                <div>
+                    <h2 class="section-header text-2xl font-bold">CV / Resume Upload</h2>
+                    <p class="text-gray-600 mt-1">Upload your latest resume in PDF format</p>
+                </div>
+            `;
+            section.appendChild(header);
+
+            const fieldContainer = createFormField({
+                name: 'cv-resume',
+                label: 'CV / Resume',
+                type: 'file',
+                required: true
+            });
+
+            section.appendChild(fieldContainer);
+            return section;
+        }
+
+        function addValidationListeners(input, field) {
+            input.addEventListener('blur', () => validateField(input, field));
+            input.addEventListener('input', () => {
+                clearFieldError(input);
+                updateProgress();
+            });
+            input.addEventListener('change', () => updateProgress());
+        }
+
+        function validateField(input, field) {
+            const value = input.value.trim();
+            const rules = validationRules[field.name] || {};
+            let isValid = true;
+            let errorMessage = '';
+
+            // Required validation
+            if (field.required && !value) {
+                isValid = false;
+                errorMessage = `${field.label} is required.`;
+            }
+
+            // Length validations
+            if (value && rules.minLength && value.length < rules.minLength) {
+                isValid = false;
+                errorMessage = `${field.label} must be at least ${rules.minLength} characters long.`;
+            }
+
+            if (value && rules.maxLength && value.length > rules.maxLength) {
+                isValid = false;
+                errorMessage = `${field.label} must not exceed ${rules.maxLength} characters.`;
+            }
+
+            // Pattern validation
+            if (value && rules.pattern) {
+                const regex = new RegExp(rules.pattern);
+                if (!regex.test(value)) {
+                    isValid = false;
+                    errorMessage = rules.errorMessage || `${field.label} format is invalid.`;
+                }
+            }
+
+            if (!isValid) {
+                showFieldError(input, errorMessage);
+                completedFields.delete(field.name);
+            } else {
+                clearFieldError(input);
+                showFieldSuccess(input);
+                if (value) {
+                    completedFields.add(field.name);
+                }
+            }
+
+            updateProgress();
+            return isValid;
+        }
+
+        function showFieldError(input, message) {
+            input.classList.add('field-error');
+            input.classList.remove('field-success');
+            const errorDiv = document.getElementById(`error-${input.name}`);
+            const successDiv = document.getElementById(`success-${input.name}`);
+            if (errorDiv) {
+                errorDiv.innerHTML = `<i class="fas fa-exclamation-circle mr-1"></i>${message}`;
+                errorDiv.classList.remove('hidden');
+            }
+            if (successDiv) {
+                successDiv.classList.add('hidden');
+            }
+        }
+
+        function showFieldSuccess(input) {
+            if (input.value.trim()) {
+                input.classList.add('field-success');
+                input.classList.remove('field-error');
+                const successDiv = document.getElementById(`success-${input.name}`);
+                if (successDiv) {
+                    successDiv.classList.remove('hidden');
+                }
+            }
+        }
+
+        function clearFieldError(input) {
+            input.classList.remove('field-error');
+            const errorDiv = document.getElementById(`error-${input.name}`);
+            if (errorDiv) {
+                errorDiv.classList.add('hidden');
+            }
+        }
+
+        function updateProgress() {
+            const totalFields = getAllFormFields().length;
+            const completedCount = completedFields.size;
+            const percentage = totalFields > 0 ? Math.round((completedCount / totalFields) * 100) : 0;
+            
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            
+            if (progressBar) {
+                progressBar.style.width = `${percentage}%`;
+            }
+            
+            if (progressText) {
+                progressText.textContent = `${percentage}% Complete (${completedCount}/${totalFields} fields)`;
+            }
+
+            // Update step indicators
+            updateStepIndicators();
+        }
+
+        function updateStepIndicators() {
+            const steps = document.querySelectorAll('.step-item');
+            const sections = Object.keys(formConfig);
+            
+            sections.forEach((sectionName, index) => {
+                const step = steps[index];
+                if (!step) return;
+                
+                const sectionFields = formConfig[sectionName];
+                const sectionCompletedFields = sectionFields.filter(field => 
+                    completedFields.has(field.name)
+                ).length;
+                
+                const sectionProgress = sectionFields.length > 0 ? 
+                    sectionCompletedFields / sectionFields.length : 0;
+                
+                step.classList.remove('active', 'completed');
+                
+                if (sectionProgress === 1) {
+                    step.classList.add('completed');
+                    step.querySelector('i').className = 'fas fa-check-circle mr-2 text-xs';
+                } else if (sectionProgress > 0) {
+                    step.classList.add('active');
+                    step.querySelector('i').className = 'fas fa-circle-notch mr-2 text-xs';
+                } else {
+                    step.querySelector('i').className = 'fas fa-circle mr-2 text-xs';
+                }
+            });
+        }
+
+        function getAllFormFields() {
+            const fields = [];
+            Object.values(formConfig).forEach(sectionFields => {
+                fields.push(...sectionFields);
+            });
+            return fields;
+        }
+
+        function populateUserDetails() {
+            const userName = sessionStorage.getItem('recruitmentUserName');
+            const userEmail = sessionStorage.getItem('recruitmentUserEmail');
+            
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            
+            if (nameInput && userName) {
+                nameInput.value = userName;
+                completedFields.add('name');
+                showFieldSuccess(nameInput);
+            }
+            if (emailInput && userEmail) {
+                emailInput.value = userEmail;
+                completedFields.add('email');
+                showFieldSuccess(emailInput);
+            }
+            
+            updateProgress();
+        }
+
+        // Handle form submission
+        document.addEventListener('submit', async function(event) {
+            if (event.target.id === 'recruitment-form') {
+                event.preventDefault();
+
+                // Validate all fields
+                let isFormValid = true;
+                const formElements = event.target.elements;
+                
+                for (const element of formElements) {
+                    if (element.name && element.type !== 'submit') {
+                        const fieldConfig = findFieldConfig(element.name);
+                        if (fieldConfig && !validateField(element, fieldConfig)) {
+                            isFormValid = false;
+                        }
+                    }
+                }
+
+                if (!isFormValid) {
+                    // Scroll to first error
+                    const firstError = document.querySelector('.field-error');
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    
+                    // Show error notification
+                    showNotification('Please correct the errors in the form before submitting.', 'error');
+                    return;
+                }
+
+                // File validation
+                const cvInput = document.getElementById('cv-resume');
+                if (cvInput && cvInput.files.length !== 1) {
+                    showNotification('Please select one CV/Resume file to submit.', 'error');
+                    return;
+                }
+
+                if (cvInput && cvInput.files[0]) {
+                    const file = cvInput.files[0];
+                    const maxSize = 5 * 1024 * 1024; // 5MB
+                    if (file.size > maxSize) {
+                        showNotification('File size exceeds the 5MB limit. Please upload a smaller file.', 'error');
+                        return;
+                    }
+                }
+
+                // Show loading state
+                const submitButton = event.target.querySelector('button[type="submit"]');
+                const submitText = document.getElementById('submit-text');
+                const submitSpinner = document.getElementById('submit-spinner');
+                
+                submitButton.disabled = true;
+                submitButton.classList.add('opacity-75', 'cursor-not-allowed');
+                submitText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Submitting...';
+                submitSpinner.classList.remove('hidden');
+
+                try {
+                    const formData = new FormData(event.target);
+                    const apiEndpoint = 'http://127.0.0.1:5000/api/submit_application';
+
+                    const response = await fetch(apiEndpoint, {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        showNotification('Application submitted successfully! Redirecting...', 'success');
+                        setTimeout(() => {
+                            localStorage.removeItem('recruitmentUserName');
+                            localStorage.removeItem('recruitmentUserEmail');
+                            window.location.href = 'login.html';
+                        }, 2000);
+                    } else {
+                        showNotification(`Error: ${result.error || 'An unknown error occurred.'}`, 'error');
+                    }
+                } catch (error) {
+                    console.error('Submission Error:', error);
+                    showNotification('An error occurred while submitting the form. Please check your connection and try again.', 'error');
+                } finally {
+                    // Reset loading state
+                    submitButton.disabled = false;
+                    submitButton.classList.remove('opacity-75', 'cursor-not-allowed');
+                    submitText.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Submit Application';
+                    submitSpinner.classList.add('hidden');
+                }
+            }
+        });
+
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-xl shadow-lg max-w-md transform translate-x-full transition-transform duration-300 ${
+                type === 'success' ? 'bg-green-500 text-white' :
+                type === 'error' ? 'bg-red-500 text-white' :
+                'bg-blue-500 text-white'
+            }`;
+            
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} mr-3"></i>
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(full)';
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+
+        function findFieldConfig(fieldName) {
+            for (const fields of Object.values(formConfig)) {
+                const field = fields.find(f => f.name === fieldName);
+                if (field) return field;
+            }
+            return null;
+        }
+    /**
+     * -------------------------------------------------------------------------
+     * DATA PERSISTENCE SCRIPT (SESSION STORAGE VERSION)
+     * This script saves form progress to sessionStorage and restores it on page load.
+     * -------------------------------------------------------------------------
+     */
+
+    // Gets a unique key from sessionStorage.
+    function getStorageKey() {
+        // NOTE: This now expects the user's email to be in sessionStorage.
+        const userEmail = sessionStorage.getItem('recruitmentUserEmail');
+        return userEmail ? `recruitmentFormData_${userEmail}` : null;
+    }
+
+    // --- 1. SAVE FORM DATA ---
+    function saveFormData() {
+        const key = getStorageKey();
+        if (!key) return;
+
+        const form = document.getElementById('recruitment-form');
+        const formData = new FormData(form);
+        const dataToStore = {};
+
+        for (const [name, value] of formData.entries()) {
+            if (!(value instanceof File)) {
+                dataToStore[name] = value;
+            }
+        }
+        sessionStorage.setItem(key, JSON.stringify(dataToStore));
+        console.log('Form progress saved to session.');
+    }
+
+    // --- 2. LOAD FORM DATA ---
+    function loadFormData() {
+        const key = getStorageKey();
+        if (!key) return;
+
+        const savedData = sessionStorage.getItem(key);
+        if (!savedData) return;
+
+        const data = JSON.parse(savedData);
+        const form = document.getElementById('recruitment-form');
+
+        for (const name in data) {
+            if (name === 'name' || name === 'email') {
+                continue;
+            }
+            const value = data[name];
+            const element = form.elements[name];
+
+            if (element) {
+                if (element.length && element[0].type === 'radio') {
+                    for (const radio of element) {
+                        if (radio.value === value) {
+                            radio.checked = true;
+                            radio.dispatchEvent(new Event('change', { 'bubbles': true }));
+                        }
+                    }
+                }
+                else if (element.type === 'checkbox') {
+                    if (value) {
+                        element.checked = true;
+                        element.dispatchEvent(new Event('change', { 'bubbles': true }));
+                    }
+                }
+                else {
+                    element.value = value;
+                    element.dispatchEvent(new Event('blur', { 'bubbles': true }));
+                }
+            }
+        }
+        console.log('Form progress successfully restored from sessionStorage.');
+    }
+
+    // --- 3. CLEAR FORM DATA ---
+    function clearSavedFormData() {
+        const key = getStorageKey();
+        if (key) {
+            sessionStorage.removeItem(key);
+            console.log('Saved session data cleared after submission.');
+        }
+    }
+
+    // --- 4. DEBOUNCE UTILITY ---
+    function debounce(func, delay = 400) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                func.apply(this, args);
+            }, delay);
+        };
+    }
+
+
+    /**
+     * -------------------------------------------------------------------------
+     * SCRIPT INTEGRATION
+     * -------------------------------------------------------------------------
+     */
+
+    setTimeout(() => {
+        const form = document.getElementById('recruitment-form');
+
+        if (form) {
+            loadFormData();
+            form.addEventListener('input', debounce(saveFormData, 400));
+            const originalFetch = window.fetch;
+            window.fetch = function(...args) {
+                const [url, options] = args;
+                if (url.includes('/api/submit_application') && options.method === 'POST') {
+                    return originalFetch(...args).then(response => {
+                        if (response.ok) {
+                            clearSavedFormData();
+                            sessionStorage.removeItem('recruitmentUserName');
+                            sessionStorage.removeItem('recruitmentUserEmail');
+                        }
+                        return response;
+                    });
+                }
+                return originalFetch(...args);
+            };
+        }
+    }, 1500);
+    </script>
+</body>
+</html>

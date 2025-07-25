@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Creation - Adventz Recruitment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-50 via-white to-cyan-50 flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow-2xl border border-gray-100">
+        
+        <!-- Form Header with Logo Placeholder -->
+        <div class="text-center mb-8">
+                <div class="inline-block bg-indigo-100 p-3 rounded-full mb-4">
+                    <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
+                    </svg>
+                </div>
+            <h1 class="text-3xl font-bold text-gray-900">Create Your Profile</h1>
+            <p class="mt-2 text-sm text-gray-600">Enter your details to proceed to the application form.</p>
+        </div>
+
+        <form id="user-creation-form">
+            <div class="space-y-6">
+                <div>
+                    <label for="user-name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                    <input type="text" name="user-name" id="user-name" class="block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-300" required placeholder="e.g., John Doe">
+                </div>
+                <div>
+                    <label for="user-email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <input type="email" name="user-email" id="user-email" class="block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-300" required placeholder="e.g., john.doe@example.com">
+                </div>
+            </div>
+
+            <!-- Form Submission Button -->
+            <div class="mt-8">
+                <button type="submit" class="w-full inline-flex justify-center py-3 px-4 border border-transparent shadow-lg text-base font-medium rounded-lg text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transform hover:scale-105 transition-transform duration-300">
+                    Create & Proceed to Form
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('user-creation-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const userName = document.getElementById('user-name').value;
+            const userEmail = document.getElementById('user-email').value;
+
+            if (userName.trim() && userEmail.trim()) {
+                sessionStorage.setItem('recruitmentUserName', userName);
+                sessionStorage.setItem('recruitmentUserEmail', userEmail);
+                window.location.href = 'recruitment-form.html';
+            } else {
+                // The alert() function is not available in this environment.
+                console.error('Please enter your full name and email address.');
+            }
+        });
+    </script>
+
+</body>
+</html>
