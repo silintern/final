@@ -403,39 +403,55 @@ def api_get_data():
 def api_submit_application():
     if 'cv-resume' not in request.files:
         return jsonify({"error": "No resume file part"}), 400
-    
     file = request.files['cv-resume']
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
 
+    # --- Handle Resume Upload (PDF) ---
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        # To avoid overwrites, prepend a unique identifier or use a better strategy
-        # For simplicity, we'll use email + original filename
         email = request.form.get('email', 'unknown')
         unique_filename = f"{secure_filename(email)}_{filename}"
-        
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
         file.save(file_path)
 
         data = request.form.to_dict()
-        data['resume_path'] = unique_filename # Store the path to be saved in DB
-        
+        data['resume_path'] = unique_filename  # Store the path to be saved in DB
+
+        # --- Handle Photo Upload (Image) ---
+        photo_filename = None
+        if 'photo-upload' in request.files:
+            photo_file = request.files['photo-upload']
+            if photo_file and photo_file.filename:
+                allowed_image_exts = {'png', 'jpg', 'jpeg'}
+                max_photo_size = 5 * 1024 * 1024  # 5MB
+                ext = photo_file.filename.rsplit('.', 1)[-1].lower()
+                if ext not in allowed_image_exts:
+                    return jsonify({"error": "Photo must be .png, .jpg, or .jpeg"}), 400
+                photo_file.seek(0, 2)
+                size = photo_file.tell()
+                photo_file.seek(0)
+                if size > max_photo_size:
+                    return jsonify({"error": "Photo size exceeds 5MB limit."}), 400
+                photos_dir = os.path.join('dashboard', 'static', 'uploads', 'photos')
+                os.makedirs(photos_dir, exist_ok=True)
+                photo_filename = f"{secure_filename(email)}_photo.{ext}"
+                photo_path = os.path.join(photos_dir, photo_filename)
+                photo_file.save(photo_path)
+                data['photo_path'] = photo_filename
+
         conn = get_db_conn()
         try:
             form_fields = conn.execute("SELECT name FROM form_config").fetchall()
             valid_columns = {field['name'] for field in form_fields}
-            valid_columns.add('resume_path') # Add resume_path to valid columns
-            
+            valid_columns.add('resume_path')
+            valid_columns.add('photo_path')
             columns_to_insert = [col for col in data.keys() if col in valid_columns]
             values_to_insert = [data[col] for col in columns_to_insert]
-            
             if not columns_to_insert:
                 return jsonify({"error": "No valid data received."}), 400
-
             placeholders = ', '.join(['?'] * len(columns_to_insert))
             query = f"INSERT INTO applications ({', '.join(columns_to_insert)}) VALUES ({placeholders})"
-            
             cursor = conn.cursor()
             cursor.execute(query, values_to_insert)
             conn.commit()
