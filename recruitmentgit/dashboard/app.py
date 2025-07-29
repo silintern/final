@@ -274,6 +274,23 @@ def init_db():
         conn.close()
         print("Database initialized successfully.")
 
+# --- Ensure photo_path column exists in applications table ---
+def ensure_photo_path_column():
+    conn = get_db_conn()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("PRAGMA table_info(applications)")
+        columns = [row['name'] for row in cursor.fetchall()]
+        if 'photo_path' not in columns:
+            cursor.execute("ALTER TABLE applications ADD COLUMN photo_path TEXT")
+            conn.commit()
+    except Exception as e:
+        print(f"[Migration] Could not add photo_path column: {e}")
+    finally:
+        conn.close()
+
+ensure_photo_path_column()
+
 # --- Web Routes ---
 
 @app.route('/')

@@ -129,12 +129,35 @@ def api_submit_application():
             data = request.form.to_dict()
             data['resume_path'] = unique_filename
 
+            # --- Handle Photo Upload (Image) ---
+            photo_filename = None
+            if 'photo-upload' in request.files:
+                photo_file = request.files['photo-upload']
+                if photo_file and photo_file.filename:
+                    allowed_image_exts = {'png', 'jpg', 'jpeg'}
+                    max_photo_size = 5 * 1024 * 1024  # 5MB
+                    ext = photo_file.filename.rsplit('.', 1)[-1].lower()
+                    if ext not in allowed_image_exts:
+                        return jsonify({"error": "Photo must be .png, .jpg, or .jpeg"}), 400
+                    photo_file.seek(0, 2)
+                    size = photo_file.tell()
+                    photo_file.seek(0)
+                    if size > max_photo_size:
+                        return jsonify({"error": "Photo size exceeds 5MB limit."}), 400
+                    photos_dir = os.path.join('..', 'dashboard', 'static', 'uploads', 'photos')
+                    os.makedirs(photos_dir, exist_ok=True)
+                    photo_filename = f"{secure_filename(email)}_photo.{ext}"
+                    photo_path = os.path.join(photos_dir, photo_filename)
+                    photo_file.save(photo_path)
+                    data['photo_path'] = photo_filename
+
             conn = get_db_conn()
             cursor = conn.cursor()
 
             form_fields = cursor.execute("SELECT name FROM form_config").fetchall()
             valid_columns = {field['name'] for field in form_fields}
             valid_columns.add('resume_path')
+            valid_columns.add('photo_path')
 
             columns_to_insert = [col for col in data.keys() if col in valid_columns]
             if not columns_to_insert:
