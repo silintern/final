@@ -59,6 +59,11 @@ def uploaded_file(filename):
     """Serves uploaded files from the 'uploads' directory."""
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
+@app.route('/photo_uploads/<filename>')
+def uploaded_photo(filename):
+    photo_folder = os.path.join('..', 'dashboard', 'static', 'uploads', 'photos')
+    return send_from_directory(photo_folder, filename)
+
 # --- API Endpoints ---
 
 @app.route('/api/public/form-config', methods=['GET'])
@@ -118,43 +123,53 @@ def api_submit_application():
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
 
+    # Handle photo upload
+    photo_filename = None
+    if 'photo-upload' in request.files:
+        photo = request.files['photo-upload']
+        if photo and photo.filename != '':
+            allowed_photo_exts = {'png', 'jpg', 'jpeg'}
+            ext = photo.filename.rsplit('.', 1)[-1].lower()
+            if ext not in allowed_photo_exts:
+                return jsonify({"error": "Photo must be .png, .jpg, or .jpeg"}), 400
+            if photo.content_length and photo.content_length > 5 * 1024 * 1024:
+                return jsonify({"error": "Photo size exceeds 5MB limit."}), 400
+            # Save photo
+            email = request.form.get('email', 'unknown')
+            photo_filename = f"{secure_filename(email)}_photo.{ext}"
+            photo_folder = os.path.join('..', 'dashboard', 'static', 'uploads', 'photos')
+            os.makedirs(photo_folder, exist_ok=True)
+            photo.save(os.path.join(photo_folder, photo_filename))
+
     if file and allowed_file(file.filename):
         email = request.form.get('email', 'unknown_email')
-        # Create a secure, unique filename to prevent overwrites
         unique_filename = f"{secure_filename(email)}_{secure_filename(file.filename)}"
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
-        
         try:
             file.save(file_path)
             data = request.form.to_dict()
             data['resume_path'] = unique_filename
-
+            if photo_filename:
+                data['photo_path'] = photo_filename
             conn = get_db_conn()
             cursor = conn.cursor()
-
             form_fields = cursor.execute("SELECT name FROM form_config").fetchall()
             valid_columns = {field['name'] for field in form_fields}
             valid_columns.add('resume_path')
-
+            valid_columns.add('photo_path')
             columns_to_insert = [col for col in data.keys() if col in valid_columns]
             if not columns_to_insert:
                 return jsonify({"error": "No valid data fields received."}), 400
-            
             values_to_insert = [data[col] for col in columns_to_insert]
             placeholders = ', '.join(['?'] * len(columns_to_insert))
-            
             query = f"INSERT INTO applications ({', '.join(columns_to_insert)}) VALUES ({placeholders})"
-            
             cursor.execute(query, values_to_insert)
             conn.commit()
-            
             return jsonify({"success": True, "message": "Application submitted successfully."})
-
         except sqlite3.IntegrityError:
             return jsonify({"error": f"An application with the email '{data.get('email')}' already exists."}), 409
         except Exception as e:
             print(f"--- API ERROR in /api/submit_application ---\n{traceback.format_exc()}")
-            # Clean up saved file on database error
             if os.path.exists(file_path):
                 os.remove(file_path)
             return jsonify({"error": "An error occurred on the server.", "message": str(e)}), 500

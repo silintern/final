@@ -169,6 +169,10 @@ def init_db():
         if 'resume_path' not in app_columns:
             print("Migrating applications: Adding 'resume_path' column...")
             cursor.execute("ALTER TABLE applications ADD COLUMN resume_path TEXT")
+        # Add migration for photo_path
+        if 'photo_path' not in app_columns:
+            print("Migrating applications: Adding 'photo_path' column...")
+            cursor.execute("ALTER TABLE applications ADD COLUMN photo_path TEXT")
 
 
         # --- Populate Form Config if it's empty ---
@@ -313,6 +317,12 @@ def route_logout():
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
+    # Serve photos from the photos folder if the filename is an image
+    photo_exts = {'png', 'jpg', 'jpeg'}
+    ext = filename.rsplit('.', 1)[-1].lower()
+    if ext in photo_exts:
+        photo_folder = os.path.join('static', 'uploads', 'photos')
+        return send_from_directory(photo_folder, filename)
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 # --- API Endpoints ---
@@ -382,7 +392,8 @@ def api_get_data():
         if 'name' in all_columns:
             all_columns.insert(0, all_columns.pop(all_columns.index('name')))
         
-        default_columns = [col for col in ['name', 'email', 'post_applying_for', 'qualification_grad_school', 'Status', 'resume_path'] if col in all_columns]
+        # Add photo_path to default columns if present
+        default_columns = [col for col in ['name', 'email', 'post_applying_for', 'qualification_grad_school', 'Status', 'resume_path', 'photo_path'] if col in all_columns]
         table_data = df.to_dict(orient='records')
 
         def get_unique_values(col_name):
@@ -408,6 +419,24 @@ def api_submit_application():
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
 
+    # Handle photo upload
+    photo_filename = None
+    if 'photo-upload' in request.files:
+        photo = request.files['photo-upload']
+        if photo and photo.filename != '':
+            allowed_photo_exts = {'png', 'jpg', 'jpeg'}
+            ext = photo.filename.rsplit('.', 1)[-1].lower()
+            if ext not in allowed_photo_exts:
+                return jsonify({"error": "Photo must be .png, .jpg, or .jpeg"}), 400
+            if photo.content_length and photo.content_length > 5 * 1024 * 1024:
+                return jsonify({"error": "Photo size exceeds 5MB limit."}), 400
+            # Save photo
+            email = request.form.get('email', 'unknown')
+            photo_filename = f"{secure_filename(email)}_photo.{ext}"
+            photo_folder = os.path.join('static', 'uploads', 'photos')
+            os.makedirs(photo_folder, exist_ok=True)
+            photo.save(os.path.join(photo_folder, photo_filename))
+
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         # To avoid overwrites, prepend a unique identifier or use a better strategy
@@ -420,12 +449,15 @@ def api_submit_application():
 
         data = request.form.to_dict()
         data['resume_path'] = unique_filename # Store the path to be saved in DB
+        if photo_filename:
+            data['photo_path'] = photo_filename
         
         conn = get_db_conn()
         try:
             form_fields = conn.execute("SELECT name FROM form_config").fetchall()
             valid_columns = {field['name'] for field in form_fields}
             valid_columns.add('resume_path') # Add resume_path to valid columns
+            valid_columns.add('photo_path') # Add photo_path to valid columns
             
             columns_to_insert = [col for col in data.keys() if col in valid_columns]
             values_to_insert = [data[col] for col in columns_to_insert]
