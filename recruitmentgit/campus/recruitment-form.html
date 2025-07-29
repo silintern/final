@@ -846,14 +846,53 @@
             `;
             section.appendChild(header);
 
+            // Resume upload field
             const fieldContainer = createFormField({
                 name: 'cv-resume',
                 label: 'CV / Resume',
                 type: 'file',
                 required: true
             });
-
             section.appendChild(fieldContainer);
+
+            // Photo upload field
+            const photoFieldContainer = createFormField({
+                name: 'photo-upload',
+                label: 'Profile Photo',
+                type: 'file',
+                required: false
+            });
+            // Add custom note for allowed types and size
+            const note = document.createElement('div');
+            note.className = 'text-xs text-gray-500 mt-1 mb-2';
+            note.innerHTML = 'Accepted formats: <b>.png, .jpg, .jpeg</b> | Max size: <b>5MB</b>';
+            photoFieldContainer.appendChild(note);
+            section.appendChild(photoFieldContainer);
+
+            // Add validation for photo upload
+            setTimeout(() => {
+                const photoInput = document.getElementById('photo-upload');
+                if (photoInput) {
+                    photoInput.accept = '.png,.jpg,.jpeg';
+                    photoInput.addEventListener('change', function() {
+                        const file = this.files[0];
+                        if (file) {
+                            const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+                            if (!allowedTypes.includes(file.type)) {
+                                showNotification('Only .png, .jpg, .jpeg files are allowed for photo upload.', 'error');
+                                this.value = '';
+                                return;
+                            }
+                            if (file.size > 5 * 1024 * 1024) {
+                                showNotification('Photo size exceeds 5MB limit.', 'error');
+                                this.value = '';
+                                return;
+                            }
+                        }
+                    });
+                }
+            }, 500);
+
             return section;
         }
 
@@ -1057,16 +1096,29 @@
 
                 // File validation
                 const cvInput = document.getElementById('cv-resume');
+                const photoInput = document.getElementById('photo-upload');
                 if (cvInput && cvInput.files.length !== 1) {
                     showNotification('Please select one CV/Resume file to submit.', 'error');
                     return;
                 }
-
                 if (cvInput && cvInput.files[0]) {
                     const file = cvInput.files[0];
                     const maxSize = 5 * 1024 * 1024; // 5MB
                     if (file.size > maxSize) {
                         showNotification('File size exceeds the 5MB limit. Please upload a smaller file.', 'error');
+                        return;
+                    }
+                }
+                // Photo file validation (optional)
+                if (photoInput && photoInput.files.length > 0) {
+                    const file = photoInput.files[0];
+                    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+                    if (!allowedTypes.includes(file.type)) {
+                        showNotification('Only .png, .jpg, .jpeg files are allowed for photo upload.', 'error');
+                        return;
+                    }
+                    if (file.size > 5 * 1024 * 1024) {
+                        showNotification('Photo size exceeds 5MB limit.', 'error');
                         return;
                     }
                 }

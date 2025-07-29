@@ -190,8 +190,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function populateTable(tableData = [], allColumns = [], defaultColumns = []) {
         const tableHead = document.querySelector('#data-table thead');
         const tableBody = document.querySelector('#data-table tbody');
-        if (!tableHead || !tableBody) return;
-
+        const photoPreviewDiv = document.getElementById('photo-preview-dashboard');
+        if (photoPreviewDiv) photoPreviewDiv.innerHTML = '';
         tableHead.innerHTML = '';
         tableBody.innerHTML = '';
         
@@ -223,6 +223,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     td.appendChild(link);
                 } else if (col === 'photo_path' && row[col]) {
                     td.innerHTML = `<div class="photo-preview mt-2"><img src="/static/uploads/photos/${row[col]}" alt="Photo" class="rounded-lg shadow-md max-h-32 border border-gray-200" onerror="this.style.display='none'" /></div>`;
+                    // Also show a larger preview below the table for the first row
+                    if (photoPreviewDiv && tableData.indexOf(row) === 0) {
+                        photoPreviewDiv.innerHTML = `<div class='photo-preview'><img src='/static/uploads/photos/${row[col]}' alt='Profile Photo' style='max-width:160px;max-height:160px;border-radius:1rem;border:2px solid #e5e7eb;box-shadow:0 2px 12px 0 rgba(6,182,212,0.18);background:#f1f5f9;object-fit:cover;'></div>`;
+                    }
                 } else {
                     td.textContent = row[col] || '';
                 }
@@ -2124,4 +2128,47 @@ document.addEventListener('DOMContentLoaded', function() {
         const formatCell = (cell) => {
             let cellString = String(cell === null || cell === undefined ? '' : cell);
             if (cellString.search(/("|,|\n)/g) >= 0) {
-                cellString = `
+                cellString = `"${cellString.replace(/"/g, '""')}"`;
+            }
+            return cellString;
+        };
+        
+        const csvContent = headers.map(header => formatCell(header)).join(',') + '\n' +
+                          currentTableData.map(row => headers.map(header => formatCell(row[header])).join(',')).join('\n');
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'data.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+    // UI Consistency Tweaks
+    window.addEventListener('DOMContentLoaded', () => {
+        // Consistent font and color for all buttons
+        document.querySelectorAll('button').forEach(btn => {
+            btn.style.fontFamily = 'Inter, sans-serif';
+            btn.style.fontWeight = '600';
+            btn.style.borderRadius = '0.5rem';
+            btn.style.transition = 'background 0.2s, box-shadow 0.2s';
+        });
+        // Remove table cell border inconsistencies
+        document.querySelectorAll('td, th').forEach(cell => {
+            cell.style.borderColor = '#e5e7eb';
+        });
+        // Fix modal and table spacing
+        document.querySelectorAll('.modal-content, .table, table').forEach(el => {
+            el.style.background = '#fff';
+            el.style.borderRadius = '1rem';
+        });
+        // Consistent background for sidebar and filters
+        const aside = document.querySelector('aside');
+        if (aside) aside.style.background = 'linear-gradient(180deg, #f8fafc 60%, #e0e7ff 100%)';
+        const filters = document.getElementById('filters-container');
+        if (filters) filters.style.background = 'linear-gradient(180deg, #f8fafc 60%, #e0e7ff 100%)';
+    });
+});
