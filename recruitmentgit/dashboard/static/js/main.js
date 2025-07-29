@@ -222,10 +222,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     link.className = 'text-blue-600 hover:underline';
                     td.appendChild(link);
                 } else if (col === 'photo_path' && row[col]) {
-                    td.innerHTML = `<div class="photo-preview mt-2"><img src="/static/uploads/photos/${row[col]}" alt="Photo" class="rounded-lg shadow-md max-h-32 border border-gray-200" onerror="this.style.display='none'" /></div>`;
+                    td.innerHTML = `<div class="photo-preview mt-2"><img src="/uploads/${row[col]}" alt="Photo" class="rounded-lg shadow-md max-h-32 border border-gray-200" onerror="this.style.display='none'" /></div>`;
                     // Also show a larger preview below the table for the first row
                     if (photoPreviewDiv && tableData.indexOf(row) === 0) {
-                        photoPreviewDiv.innerHTML = `<div class='photo-preview'><img src='/static/uploads/photos/${row[col]}' alt='Profile Photo' style='max-width:160px;max-height:160px;border-radius:1rem;border:2px solid #e5e7eb;box-shadow:0 2px 12px 0 rgba(6,182,212,0.18);background:#f1f5f9;object-fit:cover;'></div>`;
+                        photoPreviewDiv.innerHTML = `<div class='photo-preview'><img src='/uploads/${row[col]}' alt='Profile Photo' style='max-width:160px;max-height:160px;border-radius:1rem;border:2px solid #e5e7eb;box-shadow:0 2px 12px 0 rgba(6,182,212,0.18);background:#f1f5f9;object-fit:cover;' onerror="this.style.display='none'" ></div>`;
                     }
                 } else {
                     td.textContent = row[col] || '';
@@ -733,7 +733,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <i class="fas fa-file-pdf mr-2"></i>View Resume
                 </a>`;
             } else if (field.key === 'photo_path' && field.value) {
-                value.innerHTML = `<div class="photo-preview mt-2"><img src="/static/uploads/photos/${field.value}" alt="Photo" class="rounded-lg shadow-md max-h-32 border border-gray-200" onerror="this.style.display='none'" /></div>`;
+                value.innerHTML = `<div class="photo-preview mt-2"><img src="/uploads/${field.value}" alt="Photo" class="rounded-lg shadow-md max-h-32 border border-gray-200" onerror="this.style.display='none'" /></div>`;
             } else if (field.type === 'datetime' && field.value) {
                 const date = new Date(field.value);
                 value.innerHTML = `<div class="flex items-center">

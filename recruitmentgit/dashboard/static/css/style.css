@@ -1016,11 +1016,20 @@ th, td {
   border-color: var(--accent-color);
 }
 .photo-preview img {
-  max-width: 120px;
-  max-height: 120px;
-  margin: 0 auto;
-  display: block;
+    border-radius: 1rem;
+    border: 2px solid #e5e7eb;
+    box-shadow: 0 2px 12px 0 rgba(6,182,212,0.18);
+    background: #f1f5f9;
+    object-fit: cover;
+    max-width: 160px;
+    max-height: 160px;
+    transition: box-shadow 0.2s, border-color 0.2s;
 }
+.photo-preview img:hover {
+    box-shadow: 0 4px 24px 0 rgba(37,99,235,0.18);
+    border-color: #2563eb;
+}
+
 button, .action-btn, .btn-primary {
   font-family: var(--font-main);
   font-weight: 600;
@@ -1067,4 +1076,38 @@ button:focus {
   .table, table {
     font-size: 0.95em;
   }
+}
+
+/* Table styling for consistency */
+#data-table {
+    font-family: 'Inter', sans-serif;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 2px 12px 0 rgba(37,99,235,0.06);
+}
+#data-table th, #data-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+#data-table thead {
+    background: linear-gradient(90deg, #f1f5f9 0%, #e0e7ef 100%);
+    color: #2563eb;
+    font-weight: 700;
+}
+#data-table tbody tr:hover {
+    background: #f0f9ff;
+}
+
+/* Notification styling for consistency */
+.notification {
+    font-family: 'Inter', sans-serif;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 12px 0 rgba(6,182,212,0.12);
+    background: #fff;
+    color: #2563eb;
+    border: 1px solid #e0e7ef;
+    padding: 1rem 1.5rem;
+    margin: 1rem auto;
+    max-width: 420px;
+    z-index: 9999;
 }
