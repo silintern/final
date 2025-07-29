@@ -928,3 +928,136 @@ select.form-input-enhanced {
         font-size: 0.75rem;
     }
 }
+
+/* --- Dashboard UI Improvements --- */
+:root {
+  --primary-color: #4f46e5;
+  --secondary-color: #6366f1;
+  --accent-color: #06b6d4;
+  --danger-color: #ef4444;
+  --success-color: #22c55e;
+  --bg-light: #f8fafc;
+  --bg-dark: #1e293b;
+  --text-main: #1e293b;
+  --text-light: #64748b;
+  --border-radius: 0.75rem;
+  --font-main: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+
+body, .font-sans {
+  font-family: var(--font-main) !important;
+  color: var(--text-main);
+  background: var(--bg-light);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-main);
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+.btn-primary, .action-btn {
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  color: #fff !important;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.5rem 1.25rem;
+  font-weight: 600;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px 0 rgba(79,70,229,0.08);
+}
+.btn-primary:hover, .action-btn:hover {
+  background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+  box-shadow: 0 4px 16px 0 rgba(79,70,229,0.12);
+}
+
+input, select, textarea {
+  border-radius: var(--border-radius);
+  border: 1px solid #e5e7eb;
+  font-family: var(--font-main);
+  padding: 0.5rem 0.75rem;
+  background: #fff;
+  color: var(--text-main);
+  transition: border 0.2s;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+.table, table {
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  background: #fff;
+}
+
+th, td {
+  font-family: var(--font-main);
+  color: var(--text-main);
+  padding: 0.75rem 1rem;
+}
+
+.status-badge {
+  border-radius: 9999px;
+  font-weight: 600;
+  padding: 0.25rem 1rem;
+  font-size: 0.95em;
+}
+
+.resume-link, .photo-preview img {
+  transition: box-shadow 0.2s, border 0.2s;
+}
+.resume-link:hover, .photo-preview img:hover {
+  box-shadow: 0 2px 12px 0 rgba(6,182,212,0.18);
+  border-color: var(--accent-color);
+}
+
+.photo-preview img {
+  border-radius: var(--border-radius);
+  border: 2px solid #e5e7eb;
+  max-width: 120px;
+  max-height: 120px;
+  object-fit: cover;
+  background: #f1f5f9;
+}
+
+/* Fix modal and table spacing */
+.modal-content {
+  border-radius: var(--border-radius);
+  background: #fff;
+  box-shadow: 0 8px 32px 0 rgba(30,41,59,0.12);
+}
+
+/* Consistent filter and sidebar styling */
+#filters-container, aside {
+  background: linear-gradient(180deg, #f8fafc 60%, #e0e7ff 100%);
+  border-radius: var(--border-radius);
+}
+
+/* Remove outline on button click for cleaner look */
+button:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 2px var(--primary-color, #4f46e5);
+}
+
+/* Fixes for visual bugs and spacing */
+.px-6, .py-4, .p-6 {
+  padding-left: 2rem !important;
+  padding-right: 2rem !important;
+}
+.p-6 {
+  padding-top: 2rem !important;
+  padding-bottom: 2rem !important;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 98vw !important;
+    max-width: 98vw !important;
+    padding: 0.5rem !important;
+  }
+  .table, table {
+    font-size: 0.95em;
+  }
+}

@@ -142,6 +142,12 @@ function renderDynamicForm() {
         const resumeSection = createResumeSection();
         formSections.appendChild(resumeSection);
     }
+
+    // Add photo upload section if it's not defined in the config.
+    if (!formConfig['Photo Upload']) {
+        const photoSection = createPhotoSection();
+        formSections.appendChild(photoSection);
+    }
 }
 
 /**
@@ -552,6 +558,36 @@ function createResumeSection() {
     return section;
 }
 
+function createPhotoSection() {
+    const section = document.createElement('div');
+    section.className = 'form-section bg-gradient-to-br from-white to-gray-50 rounded-2xl p-8 shadow-lg border border-gray-100';
+
+    const header = document.createElement('div');
+    header.className = 'flex items-center mb-8 pb-4 border-b border-gray-200';
+    header.innerHTML = `
+        <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl mr-4">
+            <i class="fas fa-camera text-white text-lg"></i>
+        </div>
+        <div>
+            <h2 class="section-header text-2xl font-bold">Photo Upload</h2>
+            <p class="text-gray-600 mt-1">Upload a recent photo (.png, .jpg, .jpeg, max 5MB)</p>
+        </div>
+    `;
+    section.appendChild(header);
+
+    const fieldContainer = createFormField({
+        name: 'photo-upload',
+        label: 'Photo',
+        type: 'file',
+        required: false,
+        accept: '.png,.jpg,.jpeg',
+        maxSize: 5 * 1024 * 1024 // 5MB
+    });
+
+    section.appendChild(fieldContainer);
+    return section;
+}
+
 
 // --- VALIDATION AND PROGRESS ---
 
@@ -925,4 +961,31 @@ function debounce(func, delay = 300) {
             func.apply(this, args);
         }, delay);
     };
+}
+
+// Enhance file validation for photo upload
+function validatePhotoFile(input) {
+    const file = input.files[0];
+    if (!file) return true;
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (!allowedTypes.includes(file.type)) {
+        showFieldError(input, 'Only .png, .jpg, .jpeg files are allowed.');
+        return false;
+    }
+    if (file.size > maxSize) {
+        showFieldError(input, 'File size must be less than 5MB.');
+        return false;
+    }
+    clearFieldError(input);
+    showFieldSuccess(input);
+    return true;
+}
+
+// Attach validation to the photo upload input
+const photoInput = document.getElementById('photo-upload');
+if (photoInput) {
+    photoInput.addEventListener('change', function() {
+        validatePhotoFile(photoInput);
+    });
 }
