@@ -221,6 +221,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     link.target = '_blank';
                     link.className = 'text-blue-600 hover:underline';
                     td.appendChild(link);
+                } else if (col === 'photo_path' && row[col]) {
+                    td.innerHTML = `<div class="photo-preview mt-2"><img src="/static/uploads/photos/${row[col]}" alt="Photo" class="rounded-lg shadow-md max-h-32 border border-gray-200" onerror="this.style.display='none'" /></div>`;
                 } else {
                     td.textContent = row[col] || '';
                 }
@@ -593,7 +595,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 'id': { label: 'ID', subsection: 'Basic Information', type: 'text', order: 0 },
                 'submission_timestamp': { label: 'Submission Date', subsection: 'Basic Information', type: 'datetime', order: 1 },
                 'Status': { label: 'Application Status', subsection: 'Basic Information', type: 'text', order: 2 },
-                'resume_path': { label: 'Resume', subsection: 'Documents', type: 'file', order: 0 }
+                'resume_path': { label: 'Resume', subsection: 'Documents', type: 'file', order: 0 },
+                'photo_path': { label: 'Photo', subsection: 'Documents', type: 'file', order: 1 }
             };
 
             // Merge special fields with form config
@@ -725,6 +728,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 value.innerHTML = `<a href="/uploads/${field.value}" target="_blank" class="resume-link">
                     <i class="fas fa-file-pdf mr-2"></i>View Resume
                 </a>`;
+            } else if (field.key === 'photo_path' && field.value) {
+                value.innerHTML = `<div class="photo-preview mt-2"><img src="/static/uploads/photos/${field.value}" alt="Photo" class="rounded-lg shadow-md max-h-32 border border-gray-200" onerror="this.style.display='none'" /></div>`;
             } else if (field.type === 'datetime' && field.value) {
                 const date = new Date(field.value);
                 value.innerHTML = `<div class="flex items-center">
@@ -2119,138 +2124,4 @@ document.addEventListener('DOMContentLoaded', function() {
         const formatCell = (cell) => {
             let cellString = String(cell === null || cell === undefined ? '' : cell);
             if (cellString.search(/("|,|\n)/g) >= 0) {
-                cellString = `"${cellString.replace(/"/g, '""')}"`;
-            }
-            return cellString;
-        };
-
-        const csvContent = [
-            headers.join(','),
-            ...currentTableData.map(row => headers.map(header => formatCell(row[header])).join(','))
-        ].join('\n');
-        
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute("download", "recruitment_data.csv");
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-
-    function initializeEventListeners() {
-        // --- Modal Handling ---
-        const setupModal = (modalId, openBtnId, ...closeBtnIds) => {
-            const modal = document.getElementById(modalId);
-            const openBtn = document.getElementById(openBtnId);
-            if (!modal) return;
-            if (openBtn) {
-                let openAction = () => modal.classList.remove('hidden');
-                if (modalId === 'user-management-modal') openAction = openUserManagementModal;
-                if (modalId === 'form-config-modal') openAction = openFormConfigModal;
-                openBtn.addEventListener('click', openAction);
-            }
-            closeBtnIds.forEach(closeBtnId => {
-                const closeBtn = document.getElementById(closeBtnId);
-                if (closeBtn) {
-                    closeBtn.addEventListener('click', () => {
-                        modal.classList.add('hidden');
-                        if (modalId === 'status-modal' || modalId === 'form-config-modal') {
-                            fetchDataAndRender(); // Refresh data on close
-                        }
-                    });
-                }
-            });
-        };
-
-        setupModal('details-modal', null, 'close-details-modal-btn', 'close-details-modal-btn-2');
-        setupModal('status-modal', 'status-management-btn', 'close-status-modal-btn', 'close-status-modal-btn-2');
-        setupModal('user-management-modal', 'user-management-btn', 'close-user-modal-btn', 'close-user-modal-btn-2');
-        setupModal('form-config-modal', 'form-config-btn', 'close-form-config-modal-btn', 'close-form-config-modal-btn-2');
-        setupModal('field-edit-modal', null, 'close-field-edit-modal-btn', 'close-field-edit-modal-btn-2');
-
-        // --- Other Event Listeners ---
-        document.querySelectorAll('.filter-select').forEach(sel => sel.addEventListener('change', fetchDataAndRender));
-        
-        document.getElementById('reset-filters-btn').addEventListener('click', () => {
-            document.querySelectorAll('.filter-select').forEach(sel => {
-                if (sel.type === 'date') sel.value = '';
-                else sel.value = 'all';
-            });
-            fetchDataAndRender();
-        });
-
-        document.querySelectorAll('.collapsible-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                this.nextElementSibling.classList.toggle('hidden');
-                this.querySelector('svg').classList.toggle('rotate-180');
-            });
-        });
-
-        document.getElementById('add-viewer-form')?.addEventListener('submit', handleAddViewer);
-        document.getElementById('add-field-form')?.addEventListener('submit', handleAddField);
-
-        // Form configuration event listeners
-        document.getElementById('new-field-type')?.addEventListener('change', toggleOptionsContainer);
-        document.getElementById('edit-field-type')?.addEventListener('change', toggleEditOptionsContainer);
-        document.getElementById('save-field-edit')?.addEventListener('click', handleSaveFieldEdit);
-        document.getElementById('save-field-order')?.addEventListener('click', handleSaveFieldOrder);
-        
-        // Initialize form config tabs
-        initializeFormConfigTabs();
-        
-        // Add refresh functionality
-        document.getElementById('refresh-fields')?.addEventListener('click', () => {
-            openFormConfigModal();
-        });
-
-        // Add section management event listeners
-        document.getElementById('create-section-btn')?.addEventListener('click', handleCreateSection);
-        document.getElementById('save-section-order')?.addEventListener('click', handleSaveSectionOrder);
-        
-        // Add debug buttons for manual drag and drop initialization
-        document.getElementById('init-section-drag')?.addEventListener('click', () => {
-            console.log('Manual section drag initialization triggered');
-            initializeSectionDragAndDrop();
-        });
-        document.getElementById('init-field-drag')?.addEventListener('click', () => {
-            console.log('Manual field drag initialization triggered');
-            initializeDragAndDrop();
-        });
-        
-        // Add keyboard support for section creation
-        document.getElementById('new-section-name')?.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                handleCreateSection();
-            }
-        });
-        
-        document.getElementById('new-section-description')?.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                handleCreateSection();
-            }
-        });
-
-        const columnSelectorBtn = document.getElementById('column-selector-btn');
-        const columnSelectorDropdown = document.getElementById('column-selector-dropdown');
-        columnSelectorBtn?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            columnSelectorDropdown.classList.toggle('hidden');
-        });
-        window.addEventListener('click', () => columnSelectorDropdown?.classList.add('hidden'));
-
-        document.getElementById('download-csv-btn').addEventListener('click', downloadCSV);
-    }
-
-    // --- Initial Load ---
-    initializeEventListeners();
-    
-    // Ensure DOM is fully loaded and layout is stable before initializing charts
-    setTimeout(() => {
-        fetchDataAndRender();
-    }, 100);
-});
+                cellString = `
